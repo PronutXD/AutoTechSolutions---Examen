@@ -1,16 +1,14 @@
 package views.paneles;
 
-import java.awt.BorderLayout;
-import javax.swing.JPanel;
-
 /**
- * Sección "Consultas". Pendiente de diseñar.
- * FrmPrincipal la muestra en su contenedor central; el controlador la registra.
+ * Pantalla "Consultas".
+ * Su título viene de PnlSeccion; el contenido se arma en getContenido().
  */
-public class PnlConsultas extends JPanel {
+public class PnlConsultas extends PnlSeccion {
 
     public PnlConsultas() {
-        setOpaque(false);
-        setLayout(new BorderLayout());
+        super("Consultas",
+                "Información de solo lectura sobre el taller");
+        // Aquí se construye el contenido de la pantalla: getContenido().add(...)
     }
 }

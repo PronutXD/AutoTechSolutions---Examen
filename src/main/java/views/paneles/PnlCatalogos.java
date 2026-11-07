@@ -1,16 +1,14 @@
 package views.paneles;
 
-import java.awt.BorderLayout;
-import javax.swing.JPanel;
-
 /**
- * Sección "Catálogos". Pendiente de diseñar.
- * FrmPrincipal la muestra en su contenedor central; el controlador la registra.
+ * Pantalla "Catálogos".
+ * Su título viene de PnlSeccion; el contenido se arma en getContenido().
  */
-public class PnlCatalogos extends JPanel {
+public class PnlCatalogos extends PnlSeccion {
 
     public PnlCatalogos() {
-        setOpaque(false);
-        setLayout(new BorderLayout());
+        super("Catálogos",
+                "Servicios del taller y personal mecánico");
+        // Aquí se construye el contenido de la pantalla: getContenido().add(...)
     }
 }

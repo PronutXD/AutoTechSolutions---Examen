@@ -1,16 +1,14 @@
 package views.paneles;
 
-import java.awt.BorderLayout;
-import javax.swing.JPanel;
-
 /**
- * Sección "Órdenes de trabajo". Pendiente de diseñar.
- * FrmPrincipal la muestra en su contenedor central; el controlador la registra.
+ * Pantalla "Órdenes de trabajo".
+ * Su título viene de PnlSeccion; el contenido se arma en getContenido().
  */
-public class PnlOrdenes extends JPanel {
+public class PnlOrdenes extends PnlSeccion {
 
     public PnlOrdenes() {
-        setOpaque(false);
-        setLayout(new BorderLayout());
+        super("Órdenes de trabajo",
+                "Ingreso, seguimiento y entrega de cada vehículo");
+        // Aquí se construye el contenido de la pantalla: getContenido().add(...)
     }
 }

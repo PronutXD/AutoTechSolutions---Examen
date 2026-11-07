@@ -5,10 +5,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.*;
 import java.awt.image.BufferedImage;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.function.Consumer;
 import javax.swing.*;
@@ -36,9 +33,6 @@ public class FrmPrincipal extends JFrame {
     private static final Color SIDEBAR_TEXTO = new Color(0xC9C9C9);
     private static final Color SIDEBAR_ICONO = new Color(0x9A9A9A);
     private static final Color SIDEBAR_LINEA = new Color(255, 255, 255, 28);
-    private static final Color TEXTO = new Color(0x1E1E1E);
-    private static final Color GRIS = new Color(0x6B6B6B);
-    private static final Color LINEA = new Color(0xE8E7E2);
     private static final Color FONDO = new Color(0xFFFEF8);
 
     private static final String STYLE = "FlatLaf.style";
@@ -52,9 +46,7 @@ public class FrmPrincipal extends JFrame {
     private final JPanel contenedor = new JPanel(cards);
     private final JPanel nav = new JPanel();
     private final ButtonGroup grupoNav = new ButtonGroup();
-    private final Map<String, Seccion> secciones = new LinkedHashMap<>();
-    private final JLabel lblTitulo = new JLabel();
-    private final JLabel lblSubtitulo = new JLabel();
+    private final Map<String, BotonNav> botones = new LinkedHashMap<>();
     private final JLabel lblUsuario = new JLabel();
 
     // ----------------------------------------------------------- eventos hacia el controlador
@@ -74,9 +66,12 @@ public class FrmPrincipal extends JFrame {
         lblUsuario.setIcon(new IconoAvatar(u));
     }
 
-    /** Agrega un botón al sidebar y registra su panel en el contenedor central. */
-    public void agregarSeccion(String clave, String titulo, String subtitulo, Icono icono, JPanel panel) {
-        BotonNav boton = new BotonNav(titulo, icono);
+    /**
+     * Agrega un botón al sidebar y registra su panel en el contenedor central.
+     * El título y el contenido de la pantalla los pone el propio panel.
+     */
+    public void agregarSeccion(String clave, String etiqueta, Icono icono, JPanel panel) {
+        BotonNav boton = new BotonNav(etiqueta, icono);
         boton.setAlignmentX(Component.LEFT_ALIGNMENT);
         boton.addActionListener(e -> alNavegar.accept(clave));
         grupoNav.add(boton);
@@ -86,18 +81,16 @@ public class FrmPrincipal extends JFrame {
         nav.revalidate();
 
         contenedor.add(panel, clave);
-        secciones.put(clave, new Seccion(titulo, subtitulo, boton));
+        botones.put(clave, boton);
     }
 
-    /** Cambia el panel visible, el encabezado y el botón seleccionado. */
+    /** Cambia el panel visible y el botón seleccionado. */
     public void mostrarSeccion(String clave) {
-        Seccion s = secciones.get(clave);
-        if (s == null) {
+        BotonNav boton = botones.get(clave);
+        if (boton == null) {
             return;
         }
-        s.boton.setSelected(true);
-        lblTitulo.setText(s.titulo);
-        lblSubtitulo.setText(s.subtitulo);
+        boton.setSelected(true);
         cards.show(contenedor, clave);
     }
 
@@ -217,67 +210,13 @@ public class FrmPrincipal extends JFrame {
 
     // ----------------------------------------------------------- área central
 
+    /** Contenedor donde se muestra el panel de la sección elegida (cada panel trae su propio título). */
     private JPanel crearAreaCentral() {
-        JPanel centro = new JPanel(new BorderLayout());
-        centro.setBackground(FONDO);
-
-        // Encabezado: título de la sección + fecha
-        JPanel header = new JPanel(new BorderLayout());
-        header.setBackground(FONDO);
-        header.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createMatteBorder(0, 0, 1, 0, LINEA),
-                BorderFactory.createEmptyBorder(22, 32, 18, 32)));
-
-        lblTitulo.setFont(lblTitulo.getFont().deriveFont(Font.BOLD, 24f));
-        lblTitulo.setForeground(TEXTO);
-        lblSubtitulo.setFont(lblSubtitulo.getFont().deriveFont(13f));
-        lblSubtitulo.setForeground(GRIS);
-
-        JPanel titulos = new JPanel();
-        titulos.setOpaque(false);
-        titulos.setLayout(new BoxLayout(titulos, BoxLayout.Y_AXIS));
-        lblTitulo.setAlignmentX(Component.LEFT_ALIGNMENT);
-        lblSubtitulo.setAlignmentX(Component.LEFT_ALIGNMENT);
-        titulos.add(lblTitulo);
-        titulos.add(Box.createVerticalStrut(4));
-        titulos.add(lblSubtitulo);
-        header.add(titulos, BorderLayout.WEST);
-
-        JLabel fecha = new JLabel(fechaHoy());
-        fecha.setForeground(GRIS);
-        fecha.setFont(fecha.getFont().deriveFont(13f));
-        header.add(fecha, BorderLayout.EAST);
-
-        centro.add(header, BorderLayout.NORTH);
-
-        // Contenedor de paneles (los agrega agregarSeccion)
-        contenedor.setOpaque(false);
-        contenedor.setBorder(BorderFactory.createEmptyBorder(24, 32, 24, 32));
-        centro.add(contenedor, BorderLayout.CENTER);
-        return centro;
-    }
-
-    private static String fechaHoy() {
-        String t = LocalDate.now().format(
-                DateTimeFormatter.ofPattern("EEEE, d 'de' MMMM 'de' yyyy", Locale.of("es", "MX")));
-        return t.substring(0, 1).toUpperCase() + t.substring(1);
+        contenedor.setBackground(FONDO);
+        return contenedor;
     }
 
     // ================================================================= clases auxiliares
-
-    /** Datos de una sección ya registrada en el sidebar. */
-    private static class Seccion {
-
-        final String titulo;
-        final String subtitulo;
-        final BotonNav boton;
-
-        Seccion(String titulo, String subtitulo, BotonNav boton) {
-            this.titulo = titulo;
-            this.subtitulo = subtitulo;
-            this.boton = boton;
-        }
-    }
 
     /** Línea horizontal de 1 px. */
     private static class Linea extends JComponent {

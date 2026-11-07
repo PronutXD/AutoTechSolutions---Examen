@@ -13,8 +13,9 @@ import views.paneles.*;
 /**
  * Controlador de la ventana principal.
  *
- * Decide qué secciones existen, qué panel muestra cada una y qué pasa cuando el
- * usuario navega o cierra sesión. La vista (FrmPrincipal) solo dibuja.
+ * Decide qué secciones existen (etiqueta del menú, icono y panel de cada una) y
+ * qué pasa cuando el usuario navega o cierra sesión. La vista (FrmPrincipal) solo
+ * dibuja, y cada panel pone su propio título y contenido.
  */
 public class PrincipalController {
 
@@ -36,21 +37,11 @@ public class PrincipalController {
     public void iniciar() {
         vista.setUsuario(usuario);
 
-        vista.agregarSeccion(CLIENTES, "Clientes y vehículos",
-                "Registro de clientes, sus vehículos y el historial de cada uno",
-                Icono.CLIENTES, new PnlClientes());
-        vista.agregarSeccion(ORDENES, "Órdenes de trabajo",
-                "Ingreso, seguimiento y entrega de cada vehículo",
-                Icono.ORDENES, new PnlOrdenes());
-        vista.agregarSeccion(INVENTARIO, "Inventario",
-                "Repuestos, proveedores y movimientos de almacén",
-                Icono.INVENTARIO, new PnlInventario());
-        vista.agregarSeccion(CATALOGOS, "Catálogos",
-                "Servicios del taller y personal mecánico",
-                Icono.CATALOGOS, new PnlCatalogos());
-        vista.agregarSeccion(CONSULTAS, "Consultas",
-                "Información de solo lectura sobre el taller",
-                Icono.CONSULTAS, new PnlConsultas());
+        vista.agregarSeccion(CLIENTES, "Clientes y vehículos", Icono.CLIENTES, new PnlClientes());
+        vista.agregarSeccion(ORDENES, "Órdenes de trabajo", Icono.ORDENES, new PnlOrdenes());
+        vista.agregarSeccion(INVENTARIO, "Inventario", Icono.INVENTARIO, new PnlInventario());
+        vista.agregarSeccion(CATALOGOS, "Catálogos", Icono.CATALOGOS, new PnlCatalogos());
+        vista.agregarSeccion(CONSULTAS, "Consultas", Icono.CONSULTAS, new PnlConsultas());
 
         vista.setAlNavegar(this::navegar);
         vista.setAlCerrarSesion(this::cerrarSesion);

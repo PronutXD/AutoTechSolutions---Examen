@@ -1,16 +1,14 @@
 package views.paneles;
 
-import java.awt.BorderLayout;
-import javax.swing.JPanel;
-
 /**
- * Sección "Clientes y vehículos". Pendiente de diseñar.
- * FrmPrincipal la muestra en su contenedor central; el controlador la registra.
+ * Pantalla "Clientes y vehículos".
+ * Su título viene de PnlSeccion; el contenido se arma en getContenido().
  */
-public class PnlClientes extends JPanel {
+public class PnlClientes extends PnlSeccion {
 
     public PnlClientes() {
-        setOpaque(false);
-        setLayout(new BorderLayout());
+        super("Clientes y vehículos",
+                "Registro de clientes, sus vehículos y el historial de cada uno");
+        // Aquí se construye el contenido de la pantalla: getContenido().add(...)
     }
 }

@@ -1,16 +1,14 @@
 package views.paneles;
 
-import java.awt.BorderLayout;
-import javax.swing.JPanel;
-
 /**
- * Sección "Inventario". Pendiente de diseñar.
- * FrmPrincipal la muestra en su contenedor central; el controlador la registra.
+ * Pantalla "Inventario".
+ * Su título viene de PnlSeccion; el contenido se arma en getContenido().
  */
-public class PnlInventario extends JPanel {
+public class PnlInventario extends PnlSeccion {
 
     public PnlInventario() {
-        setOpaque(false);
-        setLayout(new BorderLayout());
+        super("Inventario",
+                "Repuestos, proveedores y movimientos de almacén");
+        // Aquí se construye el contenido de la pantalla: getContenido().add(...)
     }
 }
