@@ -1,5 +1,6 @@
 package views;
 
+import controller.PrincipalController;
 import com.formdev.flatlaf.FlatLaf;
 import com.formdev.flatlaf.FlatLightLaf;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
@@ -297,9 +298,10 @@ public class FrmLogin extends JFrame {
         }
 
         if (autenticar(usuario, clave)) {
-            mostrarMensaje("Inicio de sesión correcto (demo).", false);
-            // TODO: abrir la ventana principal y cerrar esta
-            // new FrmPrincipal().setVisible(true); dispose();
+            java.util.Arrays.fill(clave, '\0');
+            new PrincipalController(new FrmPrincipal(), usuario).iniciar();
+            dispose();
+            return;
         } else {
             txtUsuario.putClientProperty("JComponent.outline", "error");
             txtClave.putClientProperty("JComponent.outline", "error");
@@ -326,7 +328,7 @@ public class FrmLogin extends JFrame {
 
     // ================================================================= imágenes
 
-    private static BufferedImage cargarImagen(String nombre) {
+    static BufferedImage cargarImagen(String nombre) {
         try (InputStream in = FrmLogin.class.getResourceAsStream(RUTA_IMG + nombre)) {
             return in == null ? null : ImageIO.read(in);
         } catch (IOException ex) {
@@ -334,7 +336,7 @@ public class FrmLogin extends JFrame {
         }
     }
 
-    private static List<Image> cargarIconos() {
+    static List<Image> cargarIconos() {
         List<Image> lista = new ArrayList<>();
         for (String n : new String[]{"app_icono_16.png", "app_icono_32.png",
             "app_icono_64.png", "app_icono_256.png"}) {
@@ -347,7 +349,7 @@ public class FrmLogin extends JFrame {
     }
 
     /** Reduce con calidad (mitades sucesivas + bicúbico) para evitar bordes dentados. */
-    private static ImageIcon escalar(BufferedImage src, int ancho) {
+    static ImageIcon escalar(BufferedImage src, int ancho) {
         BufferedImage actual = src;
         while (actual.getWidth() / 2 >= ancho) {
             actual = redimensionar(actual, actual.getWidth() / 2);
