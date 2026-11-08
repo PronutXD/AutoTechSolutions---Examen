@@ -4,17 +4,20 @@ import controller.PrincipalController;
 import com.formdev.flatlaf.FlatLaf;
 import com.formdev.flatlaf.FlatLightLaf;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
+import dao.UsuarioDAO;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.event.*;
+import model.Sesion;
 
 /**
  * Pantalla de inicio de sesión de AutoTechSolutions (FlatLaf).
@@ -49,6 +52,9 @@ public class FrmLogin extends JFrame {
     private JCheckBox chkRecordar;
     private JButton btnIngresar;
     private JLabel lblMensaje;
+
+    // true si el último intento falló por problemas de conexión (no por clave incorrecta)
+    private boolean errorConexion = false;
 
     public FrmLogin() {
         initUI();
@@ -303,16 +309,31 @@ public class FrmLogin extends JFrame {
             dispose();
             return;
         } else {
-            txtUsuario.putClientProperty("JComponent.outline", "error");
-            txtClave.putClientProperty("JComponent.outline", "error");
-            mostrarMensaje("Usuario o contraseña incorrectos.", true);
+            if (!errorConexion) {
+                txtUsuario.putClientProperty("JComponent.outline", "error");
+                txtClave.putClientProperty("JComponent.outline", "error");
+                mostrarMensaje("Usuario o contraseña incorrectos.", true);
+            }
         }
         java.util.Arrays.fill(clave, '\0');
     }
 
-    /** DEMO: reemplazar por la validación real (DAO). Usuario: admin / Clave: 1234 */
+    /** Valida contra SQL Server con sp_ValidarLogin. Guarda el usuario en Sesion si es correcto. */
     private boolean autenticar(String usuario, char[] clave) {
-        return "admin".equals(usuario) && "1234".equals(new String(clave));
+        errorConexion = false;
+        try {
+            var u = new UsuarioDAO().validar(usuario, clave);
+            if (u.isPresent()) {
+                Sesion.iniciar(u.get());
+                return true;
+            }
+            return false;
+        } catch (SQLException e) {
+            errorConexion = true;
+            mostrarMensaje("No se pudo conectar a la base de datos.", true);
+            e.printStackTrace();
+            return false;
+        }
     }
 
     private void mostrarMensaje(String texto, boolean error) {
