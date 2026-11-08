@@ -80,14 +80,25 @@ public class PnlClientes extends PnlSeccion {
                         return;
                     }
 
-                    tblClientes.getModelo().addRow(new Object[]{
-                        documento, nombres, apellidos, telefono, correo, "0", "Activo"
-                    });
+                    // 1. Creamos el objeto Modelo
+                    modelo.Cliente nuevoCliente = new modelo.Cliente(documento, nombres, apellidos, telefono, correo, "Activo");
 
-                    JOptionPane.showMessageDialog(this, "¡Cliente registrado con éxito!", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                    // 2. Instanciamos el DAO y guardamos en la base de datos
+                    Dao.ClienteDao dao = new Dao.ClienteDao();
+                    boolean registrado = dao.insertar(nuevoCliente);
+
+                    if (registrado) {
+                        // 3. Si se guardó con éxito en la BD, lo reflejamos en la tabla visual
+                        tblClientes.getModelo().addRow(new Object[]{
+                            documento, nombres, apellidos, telefono, correo, "0", "Activo"
+                        });
+                        JOptionPane.showMessageDialog(this, "¡Cliente registrado en la base de datos con éxito!", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                    } else {
+                        JOptionPane.showMessageDialog(this, "No se pudo guardar en la base de datos.", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
                 }
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(this, "Error al registrar el cliente: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
         });
     }
