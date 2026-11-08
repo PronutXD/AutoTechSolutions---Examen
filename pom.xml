@@ -23,6 +23,13 @@
             <artifactId>flatlaf-extras</artifactId>
             <version>3.4.1</version>
         </dependency>
+        
+        <!-- Driver JDBC de SQL Server -->
+        <dependency>
+            <groupId>com.microsoft.sqlserver</groupId>
+            <artifactId>mssql-jdbc</artifactId>
+            <version>12.8.1.jre11</version>
+        </dependency>
     </dependencies>
     
     <build>
