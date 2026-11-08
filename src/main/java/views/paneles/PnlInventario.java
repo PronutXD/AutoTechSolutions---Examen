@@ -1,105 +1,165 @@
 package views.paneles;
 
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
+import javax.swing.JTextField;
 import views.componentes.PnlTabla;
 
 /**
- * Pantalla "Inventario": repuestos, proveedores, movimientos de almacén y motores.
- *
- * Los motores también son repuestos: aparecen en la lista de Repuestos con su
- * nombre y número de serie, y desde ahí (clic derecho) se salta a la pestaña
- * Motores, que muestra la ficha técnica y permite buscar motores compatibles.
+ * Pantalla de Inventario: control de productos y proveedores.
  */
 public class PnlInventario extends PnlSeccion {
 
-    private static final int COL_REPUESTO = 1;
-    private static final int COL_CATEGORIA = 2;
-
-    private final PnlTabla tblRepuestos = new PnlTabla(
-            "Código", "Repuesto", "Categoría", "Proveedor", "Stock", "Mínimo", "Costo", "Precio venta");
+    private final PnlTabla tblProductos = new PnlTabla(
+            "Código", "Descripción", "Categoría", "Stock", "Precio Compra", "Precio Venta", "Ubicación");
 
     private final PnlTabla tblProveedores = new PnlTabla(
-            "Nombre", "Contacto", "Teléfono", "Correo", "Estado");
-
-    private final PnlTabla tblMovimientos = new PnlTabla(
-            "Código", "Fecha", "Repuesto", "Tipo", "Cantidad", "Costo unitario", "Proveedor / Orden", "Usuario");
-
-    private final PnlTabla tblMotores = new PnlTabla(
-            "Motor (nombre / serie)", "Marca", "Modelo compatible", "Años", "Cilindraje", "Combustible", "Estado");
-
-    private final JTabbedPane tabs;
-    private int indiceMotores;
+            "ID", "Nombre / Empresa", "Contacto", "Teléfono", "Correo", "Dirección");
 
     public PnlInventario() {
-        super("Inventario",
-                "Repuestos, proveedores, movimientos de almacén y motores");
+        super("Inventario y Proveedores",
+                "Gestión de stock de repuestos, productos y proveedores");
 
-        configurarRepuestos();
+        configurarProductos();
         configurarProveedores();
-        configurarMovimientos();
-        configurarMotores();
 
-        tabs = crearPestanas();
-        agregarPestana(tabs, "Repuestos", tblRepuestos);
+        JTabbedPane tabs = crearPestanas();
+        agregarPestana(tabs, "Productos", tblProductos);
         agregarPestana(tabs, "Proveedores", tblProveedores);
-        agregarPestana(tabs, "Movimientos", tblMovimientos);
-        agregarPestana(tabs, "Motores", tblMotores);
-        indiceMotores = 3;
     }
 
-    private void configurarRepuestos() {
-        tblRepuestos.setPlaceholder("Buscar por código, nombre o proveedor...");
-        tblRepuestos.addFiltro("Categoría", "Todas", "Aceite", "Filtro", "Bujía", "Batería", "Freno",
-                "Radiador", "Transmisión", "Motor", "Otro");
-        tblRepuestos.addFiltroCheck("Solo stock bajo");
-        tblRepuestos.addAccion("Nuevo repuesto", true, false);
-        tblRepuestos.addAccion("Registrar entrada", false, true);
-        tblRepuestos.addAccion("Editar", false, true);
-        tblRepuestos.setAnchos(110, 230, 110, 150, 60, 70, 80, 100);
-        tblRepuestos.alinearDerecha(4, 5, 6, 7);
+    private void configurarProductos() {
+        tblProductos.setPlaceholder("Buscar por código, descripción o categoría...");
+        tblProductos.addFiltro("Categoría", "Todos", "Repuestos", "Lubricantes", "Accesorios", "Herramientas");
+        
+        var btnNuevoRegistro = tblProductos.addAccion("Nuevo registro", true, false);
+        tblProductos.addAccion("Editar", false, true);
+        tblProductos.addAccion("Ajustar Stock", false, true);
+        
+        tblProductos.setAnchos(90, 200, 120, 70, 100, 100, 110);
+        tblProductos.alinearDerecha(3, 4, 5);
 
-        tblRepuestos.addMenuContextual("Ver detalles del motor")
-                .addActionListener(e -> verDetalleMotor());
+        // Acción para el botón "Nuevo registro" (Producto)
+        btnNuevoRegistro.addActionListener(e -> {
+            try {
+                JTextField txtCodigo = new JTextField(15);
+                JTextField txtDescripcion = new JTextField(15);
+                JTextField txtCategoria = new JTextField(15);
+                JTextField txtStock = new JTextField(15);
+                JTextField txtPCompra = new JTextField(15);
+                JTextField txtPVenta = new JTextField(15);
+                JTextField txtUbicacion = new JTextField(15);
+
+                JPanel panelFormulario = new JPanel();
+                panelFormulario.setLayout(new java.awt.GridLayout(0, 1, 3, 3));
+                panelFormulario.add(new JLabel("Código:"));
+                panelFormulario.add(txtCodigo);
+                panelFormulario.add(new JLabel("Descripción:"));
+                panelFormulario.add(txtDescripcion);
+                panelFormulario.add(new JLabel("Categoría:"));
+                panelFormulario.add(txtCategoria);
+                panelFormulario.add(new JLabel("Stock Inicial:"));
+                panelFormulario.add(txtStock);
+                panelFormulario.add(new JLabel("Precio Compra:"));
+                panelFormulario.add(txtPCompra);
+                panelFormulario.add(new JLabel("Precio Venta:"));
+                panelFormulario.add(txtPVenta);
+                panelFormulario.add(new JLabel("Ubicación:"));
+                panelFormulario.add(txtUbicacion);
+
+                JScrollPane scrollPane = new JScrollPane(panelFormulario);
+                scrollPane.setPreferredSize(new java.awt.Dimension(300, 300));
+
+                int resultado = JOptionPane.showConfirmDialog(
+                        this, scrollPane, "Nuevo Producto en Inventario", 
+                        JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+
+                if (resultado == JOptionPane.OK_OPTION) {
+                    String codigo = txtCodigo.getText().trim();
+                    String descripcion = txtDescripcion.getText().trim();
+
+                    if (codigo.isEmpty() || descripcion.isEmpty()) {
+                        JOptionPane.showMessageDialog(this, "El código y la descripción son obligatorios.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+                        return;
+                    }
+
+                    tblProductos.getModelo().addRow(new Object[]{
+                        codigo, descripcion, txtCategoria.getText().trim(),
+                        txtStock.getText().trim().isEmpty() ? "0" : txtStock.getText().trim(),
+                        txtPCompra.getText().trim().isEmpty() ? "0.00" : txtPCompra.getText().trim(),
+                        txtPVenta.getText().trim().isEmpty() ? "0.00" : txtPVenta.getText().trim(),
+                        txtUbicacion.getText().trim()
+                    });
+
+                    JOptionPane.showMessageDialog(this, "¡Producto registrado con éxito!", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                }
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, "Error al registrar el producto: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        });
     }
 
     private void configurarProveedores() {
-        tblProveedores.setPlaceholder("Buscar por nombre, contacto o correo...");
-        tblProveedores.addFiltro("Estado", "Todos", "Activos", "Inactivos");
-        tblProveedores.addAccion("Nuevo proveedor", true, false);
+        tblProveedores.setPlaceholder("Buscar proveedor por nombre o teléfono...");
+        
+        var btnNuevoProveedor = tblProveedores.addAccion("Nuevo proveedor", true, false);
         tblProveedores.addAccion("Editar", false, true);
-        tblProveedores.addAccion("Desactivar", false, true);
-        tblProveedores.setAnchos(200, 160, 120, 220, 90);
-    }
+        
+        tblProveedores.setAnchos(60, 180, 140, 100, 180, 200);
 
-    /** Solo lectura: los movimientos los generan las entradas y los consumos de las órdenes. */
-    private void configurarMovimientos() {
-        tblMovimientos.setPlaceholder("Buscar por código, repuesto, proveedor u orden...");
-        tblMovimientos.addFiltro("Tipo", "Todos", "Entrada", "Salida");
-        tblMovimientos.setAnchos(110, 130, 220, 80, 80, 110, 180, 110);
-        tblMovimientos.alinearDerecha(4, 5);
-    }
+        // Acción para el botón "Nuevo proveedor"
+        btnNuevoProveedor.addActionListener(e -> {
+            try {
+                JTextField txtId = new JTextField(15);
+                JTextField txtNombre = new JTextField(15);
+                JTextField txtContacto = new JTextField(15);
+                JTextField txtTelefono = new JTextField(15);
+                JTextField txtCorreo = new JTextField(15);
+                JTextField txtDireccion = new JTextField(15);
 
-    private void configurarMotores() {
-        tblMotores.setPlaceholder("Buscar por serie, marca, modelo o cilindraje...");
-        tblMotores.addFiltro("Combustible", "Todos", "Gasolina", "Diésel", "Híbrido", "Eléctrico", "Gas");
-        tblMotores.addFiltro("Estado", "Todos", "Disponible", "Reservado", "Instalado", "Retirado", "Descartado");
-        tblMotores.addAccion("Nuevo motor", true, false);
-        tblMotores.addAccion("Buscar compatibles", false, true);
-        tblMotores.addAccion("Editar", false, true);
-        tblMotores.setAnchos(220, 110, 160, 110, 90, 110, 100);
-    }
+                JPanel panelFormulario = new JPanel();
+                panelFormulario.setLayout(new java.awt.GridLayout(0, 1, 3, 3));
+                panelFormulario.add(new JLabel("ID / RTN:"));
+                panelFormulario.add(txtId);
+                panelFormulario.add(new JLabel("Nombre / Empresa:"));
+                panelFormulario.add(txtNombre);
+                panelFormulario.add(new JLabel("Persona de Contacto:"));
+                panelFormulario.add(txtContacto);
+                panelFormulario.add(new JLabel("Teléfono:"));
+                panelFormulario.add(txtTelefono);
+                panelFormulario.add(new JLabel("Correo:"));
+                panelFormulario.add(txtCorreo);
+                panelFormulario.add(new JLabel("Dirección:"));
+                panelFormulario.add(txtDireccion);
 
-    /** Clic derecho en Repuestos: salta a Motores y deja filtrado ese motor. */
-    private void verDetalleMotor() {
-        Object categoria = tblRepuestos.getValorSeleccionado(COL_CATEGORIA);
-        if (!"Motor".equals(categoria)) {
-            JOptionPane.showMessageDialog(this, "Esta opción solo aplica a repuestos de categoría Motor.",
-                    "Ver detalles del motor", JOptionPane.INFORMATION_MESSAGE);
-            return;
-        }
-        Object nombre = tblRepuestos.getValorSeleccionado(COL_REPUESTO);
-        tblMotores.getBuscador().setText(nombre == null ? "" : nombre.toString());
-        tabs.setSelectedIndex(indiceMotores);
+                JScrollPane scrollPane = new JScrollPane(panelFormulario);
+                scrollPane.setPreferredSize(new java.awt.Dimension(300, 280));
+
+                int resultado = JOptionPane.showConfirmDialog(
+                        this, scrollPane, "Registrar Nuevo Proveedor", 
+                        JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+
+                if (resultado == JOptionPane.OK_OPTION) {
+                    String nombre = txtNombre.getText().trim();
+
+                    if (nombre.isEmpty()) {
+                        JOptionPane.showMessageDialog(this, "El nombre del proveedor es obligatorio.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+                        return;
+                    }
+
+                    tblProveedores.getModelo().addRow(new Object[]{
+                        txtId.getText().trim(), nombre, txtContacto.getText().trim(),
+                        txtTelefono.getText().trim(), txtCorreo.getText().trim(), txtDireccion.getText().trim()
+                    });
+
+                    JOptionPane.showMessageDialog(this, "¡Proveedor registrado con éxito!", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                }
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, "Error al registrar el proveedor: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        });
     }
 }

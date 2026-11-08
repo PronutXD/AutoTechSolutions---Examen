@@ -278,6 +278,10 @@ public class PnlTabla extends JPanel {
         lblConteo.setText(n == 1 ? "1 registro" : n + " registros");
     }
 
+    public Object getAccion(String nuevo_cliente) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
     /** Lupa vectorial para el buscador. */
     private static class IconoLupa implements Icon {
 
