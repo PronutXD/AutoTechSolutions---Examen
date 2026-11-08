@@ -38,6 +38,25 @@ public abstract class PnlSeccion extends JPanel {
         return contenido;
     }
 
+    /** Crea el contenedor de pestañas con el estilo común y lo coloca en el contenido. */
+    protected JTabbedPane crearPestanas() {
+        JTabbedPane tabs = new JTabbedPane();
+        tabs.putClientProperty("JTabbedPane.tabType", "underlined");
+        tabs.setBackground(FONDO);
+        contenido.add(tabs, BorderLayout.CENTER);
+        return tabs;
+    }
+
+    /** Agrega una pestaña con un pequeño margen superior para separar el contenido de las pestañas. */
+    protected void agregarPestana(JTabbedPane tabs, String titulo, JComponent componente) {
+        JPanel marco = new JPanel(new BorderLayout());
+        marco.setOpaque(true);
+        marco.setBackground(FONDO);
+        marco.setBorder(BorderFactory.createEmptyBorder(18, 0, 0, 0));
+        marco.add(componente, BorderLayout.CENTER);
+        tabs.addTab(titulo, marco);
+    }
+
     private JPanel crearEncabezado(String titulo, String subtitulo) {
         JPanel header = new JPanel(new BorderLayout());
         header.setBackground(FONDO);
