@@ -1,6 +1,10 @@
 package views;
 
+import controller.LoginController;
 import controller.PrincipalController;
+import dao.ErroresSQL;
+import java.sql.SQLException;
+import model.Sesion.Usuario;
 import com.formdev.flatlaf.FlatLaf;
 import com.formdev.flatlaf.FlatLightLaf;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
@@ -12,6 +16,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.event.*;
@@ -49,6 +54,8 @@ public class FrmLogin extends JFrame {
     private JCheckBox chkRecordar;
     private JButton btnIngresar;
     private JLabel lblMensaje;
+
+    private final LoginController loginController = new LoginController();
 
     public FrmLogin() {
         initUI();
@@ -297,22 +304,22 @@ public class FrmLogin extends JFrame {
             return;
         }
 
-        if (autenticar(usuario, clave)) {
+        try {
+            Optional<Usuario> autenticado = loginController.autenticar(usuario, clave);
+            if (autenticado.isPresent()) {
+                new PrincipalController(new FrmPrincipal(), autenticado.get()).iniciar();
+                dispose();
+            } else {
+                txtUsuario.putClientProperty("JComponent.outline", "error");
+                txtClave.putClientProperty("JComponent.outline", "error");
+                mostrarMensaje("Usuario o contraseña incorrectos.", true);
+            }
+        } catch (SQLException ex) {
+            mostrarMensaje("No se pudo iniciar sesión. Revisa la conexión con la base de datos.", true);
+            JOptionPane.showMessageDialog(this, ErroresSQL.mensaje(ex, "iniciar sesión", "usuario"), "Error de conexión", JOptionPane.ERROR_MESSAGE);
+        } finally {
             java.util.Arrays.fill(clave, '\0');
-            new PrincipalController(new FrmPrincipal(), usuario).iniciar();
-            dispose();
-            return;
-        } else {
-            txtUsuario.putClientProperty("JComponent.outline", "error");
-            txtClave.putClientProperty("JComponent.outline", "error");
-            mostrarMensaje("Usuario o contraseña incorrectos.", true);
         }
-        java.util.Arrays.fill(clave, '\0');
-    }
-
-    /** DEMO: reemplazar por la validación real (DAO). Usuario: admin / Clave: 1234 */
-    private boolean autenticar(String usuario, char[] clave) {
-        return "admin".equals(usuario) && "1234".equals(new String(clave));
     }
 
     private void mostrarMensaje(String texto, boolean error) {
@@ -457,4 +464,5 @@ public class FrmLogin extends JFrame {
 
         java.awt.EventQueue.invokeLater(() -> new FrmLogin().setVisible(true));
     }
+    
 }

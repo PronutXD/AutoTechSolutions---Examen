@@ -4,6 +4,8 @@ import com.formdev.flatlaf.FlatLaf;
 import com.formdev.flatlaf.FlatLightLaf;
 import java.awt.EventQueue;
 import java.util.Collections;
+import model.Sesion;
+import model.Sesion.Usuario;
 import javax.swing.UIManager;
 import views.FrmLogin;
 import views.FrmPrincipal;
@@ -26,18 +28,20 @@ public class PrincipalController {
     private static final String CONSULTAS = "consultas";
 
     private final FrmPrincipal vista;
-    private final String usuario;
+    private final Usuario usuario;
 
-    public PrincipalController(FrmPrincipal vista, String usuario) {
+    public PrincipalController(FrmPrincipal vista, Usuario usuario) {
         this.vista = vista;
         this.usuario = usuario;
     }
 
     /** Arma la ventana, conecta los eventos y la muestra. */
     public void iniciar() {
-        vista.setUsuario(usuario);
+        vista.setUsuario(usuario.usuario());
 
-        vista.agregarSeccion(CLIENTES, "Clientes y vehículos", Icono.CLIENTES, new PnlClientes());
+        PnlClientes pnlClientes = new PnlClientes();
+        vista.agregarSeccion(CLIENTES, "Clientes y vehículos", Icono.CLIENTES, pnlClientes);
+        new ClientesController(pnlClientes, vista).iniciar();
         vista.agregarSeccion(ORDENES, "Órdenes de trabajo", Icono.ORDENES, new PnlOrdenes());
         vista.agregarSeccion(INVENTARIO, "Inventario", Icono.INVENTARIO, new PnlInventario());
         vista.agregarSeccion(CATALOGOS, "Catálogos", Icono.CATALOGOS, new PnlCatalogos());
@@ -56,6 +60,7 @@ public class PrincipalController {
 
     private void cerrarSesion() {
         if (vista.confirmar("Cerrar sesión", "¿Deseas cerrar la sesión?")) {
+            Sesion.cerrar();
             new FrmLogin().setVisible(true);
             vista.dispose();
         }
@@ -66,6 +71,7 @@ public class PrincipalController {
     /**
      * Solo para probar la ventana principal sin pasar por el login
      * (clic derecho sobre este archivo, Run File). Se puede borrar.
+     * Sin sesión real, las pantallas que usan la base muestran un aviso de conexión.
      */
     public static void main(String[] args) {
         FlatLaf.setGlobalExtraDefaults(Collections.singletonMap("@accentColor", "#E45E16"));
@@ -78,6 +84,9 @@ public class PrincipalController {
 
         FlatLightLaf.setup();
 
-        EventQueue.invokeLater(() -> new PrincipalController(new FrmPrincipal(), "admin").iniciar());
+        EventQueue.invokeLater(() -> {
+            Usuario prueba = new Usuario(0, "admin", "Administrador", null, false);
+            new PrincipalController(new FrmPrincipal(), prueba).iniciar();
+        });
     }
 }
