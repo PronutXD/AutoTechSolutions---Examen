@@ -49,7 +49,9 @@ public class PrincipalController {
         vista.agregarSeccion(INVENTARIO, "Inventario", Icono.INVENTARIO, pnlInventario);
         new InventarioController(pnlInventario, vista).iniciar();
         vista.agregarSeccion(CATALOGOS, "Catálogos", Icono.CATALOGOS, new PnlCatalogos());
-        vista.agregarSeccion(CONSULTAS, "Consultas", Icono.CONSULTAS, new PnlConsultas());
+        PnlConsultas pnlConsultas = new PnlConsultas();
+        vista.agregarSeccion(CONSULTAS, "Consultas", Icono.CONSULTAS, pnlConsultas);
+        new ConsultasController(pnlConsultas, vista).iniciar();
 
         vista.setAlNavegar(this::navegar);
         vista.setAlCerrarSesion(this::cerrarSesion);
