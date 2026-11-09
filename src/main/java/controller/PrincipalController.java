@@ -1,3 +1,4 @@
+
 package controller;
 
 import com.formdev.flatlaf.FlatLaf;
@@ -16,8 +17,7 @@ import views.paneles.*;
  * Controlador de la ventana principal.
  *
  * Decide qué secciones existen (etiqueta del menú, icono y panel de cada una) y
- * qué pasa cuando el usuario navega o cierra sesión. La vista (FrmPrincipal) solo
- * dibuja, y cada panel pone su propio título y contenido.
+ * qué pasa cuando el usuario navega o cierra sesión.
  */
 public class PrincipalController {
 
@@ -39,48 +39,99 @@ public class PrincipalController {
     public void iniciar() {
         vista.setUsuario(usuario.usuario());
 
+        // ======================== CLIENTES ========================
         PnlClientes pnlClientes = new PnlClientes();
-        vista.agregarSeccion(CLIENTES, "Clientes y vehículos", Icono.CLIENTES, pnlClientes);
+        vista.agregarSeccion(
+                CLIENTES,
+                "Clientes y vehículos",
+                Icono.CLIENTES,
+                pnlClientes
+        );
         new ClientesController(pnlClientes, vista).iniciar();
+
+        // ======================== ÓRDENES ========================
         PnlOrdenes pnlOrdenes = new PnlOrdenes();
-        vista.agregarSeccion(ORDENES, "Órdenes de trabajo", Icono.ORDENES, pnlOrdenes);
+        vista.agregarSeccion(
+                ORDENES,
+                "Órdenes de trabajo",
+                Icono.ORDENES,
+                pnlOrdenes
+        );
         new OrdenController(pnlOrdenes, vista).iniciar();
+
+        // ======================== INVENTARIO ========================
         PnlInventario pnlInventario = new PnlInventario();
-        vista.agregarSeccion(INVENTARIO, "Inventario", Icono.INVENTARIO, pnlInventario);
+        vista.agregarSeccion(
+                INVENTARIO,
+                "Inventario",
+                Icono.INVENTARIO,
+                pnlInventario
+        );
         new InventarioController(pnlInventario, vista).iniciar();
-        vista.agregarSeccion(CATALOGOS, "Catálogos", Icono.CATALOGOS, new PnlCatalogos());
+
+        // ======================== CATÁLOGOS ========================
+        PnlCatalogos pnlCatalogos = new PnlCatalogos();
+        vista.agregarSeccion(
+                CATALOGOS,
+                "Catálogos",
+                Icono.CATALOGOS,
+                pnlCatalogos
+        );
+        new CatalogosController(pnlCatalogos, vista).iniciar();
+
+        // ======================== CONSULTAS ========================
         PnlConsultas pnlConsultas = new PnlConsultas();
-        vista.agregarSeccion(CONSULTAS, "Consultas", Icono.CONSULTAS, pnlConsultas);
+        vista.agregarSeccion(
+                CONSULTAS,
+                "Consultas",
+                Icono.CONSULTAS,
+                pnlConsultas
+        );
         new ConsultasController(pnlConsultas, vista).iniciar();
 
+        // ======================== EVENTOS ========================
         vista.setAlNavegar(this::navegar);
         vista.setAlCerrarSesion(this::cerrarSesion);
 
+        // Mostrar sección inicial
         vista.mostrarSeccion(CLIENTES);
+
+        // Mostrar ventana principal
         vista.setVisible(true);
     }
 
+    /** Navegación entre las secciones. */
     private void navegar(String clave) {
         vista.mostrarSeccion(clave);
     }
 
+    /** Cierre de sesión. */
     private void cerrarSesion() {
-        if (vista.confirmar("Cerrar sesión", "¿Deseas cerrar la sesión?")) {
+        if (vista.confirmar(
+                "Cerrar sesión",
+                "¿Deseas cerrar la sesión?")) {
+
             Sesion.cerrar();
+
             new FrmLogin().setVisible(true);
+
             vista.dispose();
         }
     }
 
-    // ================================================================= main de prueba
+    // =================================================================
+    // MAIN DE PRUEBA
+    // =================================================================
 
     /**
-     * Solo para probar la ventana principal sin pasar por el login
-     * (clic derecho sobre este archivo, Run File). Se puede borrar.
-     * Sin sesión real, las pantallas que usan la base muestran un aviso de conexión.
+     * Permite probar la ventana principal sin pasar por el login.
+     * Se puede ejecutar directamente desde el IDE.
      */
     public static void main(String[] args) {
-        FlatLaf.setGlobalExtraDefaults(Collections.singletonMap("@accentColor", "#E45E16"));
+
+        FlatLaf.setGlobalExtraDefaults(
+                Collections.singletonMap("@accentColor", "#E45E16")
+        );
 
         UIManager.put("Button.arc", 12);
         UIManager.put("Component.arc", 12);
@@ -91,8 +142,19 @@ public class PrincipalController {
         FlatLightLaf.setup();
 
         EventQueue.invokeLater(() -> {
-            Usuario prueba = new Usuario(0, "admin", "Administrador", null, false);
-            new PrincipalController(new FrmPrincipal(), prueba).iniciar();
+
+            Usuario prueba = new Usuario(
+                    0,
+                    "admin",
+                    "Administrador",
+                    null,
+                    false
+            );
+
+            new PrincipalController(
+                    new FrmPrincipal(),
+                    prueba
+            ).iniciar();
         });
     }
 }
