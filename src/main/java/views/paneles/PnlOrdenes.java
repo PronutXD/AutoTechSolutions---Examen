@@ -1,31 +1,59 @@
 package views.paneles;
 
-import java.awt.BorderLayout;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JTabbedPane;
+import model.Orden;
 import views.componentes.PnlTabla;
 
 /**
  * Pantalla "Órdenes de trabajo": listado de órdenes con filtro por estado.
- * El detalle de cada orden (datos, diagnóstico y presupuesto, trabajo, calidad,
- * pagos y cambio de motor) se abre desde "Abrir orden" y se diseña aparte.
+ * Las columnas son las de vw_ListadoOrdenes y los estados son los de la base.
+ *
+ * Solo diseño: OrdenController le conecta los datos y los botones.
  */
 public class PnlOrdenes extends PnlSeccion {
 
     private final PnlTabla tblOrdenes = new PnlTabla(
             "N° orden", "Ingreso", "Cliente", "Vehículo", "Responsable", "Estado", "Total");
 
+    private JComboBox<String> cmbEstado;
+    private JButton btnNuevaOrden;
+    private JButton btnAbrirOrden;
+
     public PnlOrdenes() {
         super("Órdenes de trabajo",
-                "Ingreso, seguimiento y entrega de cada vehículo");
+                "Seguimiento de las órdenes de servicio del taller");
 
         tblOrdenes.setPlaceholder("Buscar por número, cliente, placa o responsable...");
-        tblOrdenes.addFiltro("Estado", "Todos", "Recibida", "En diagnóstico", "Pendiente de aprobación",
-                "En reparación", "En control de calidad", "Finalizada y entregada",
-                "Rechazada", "Cancelada");
-        tblOrdenes.addAccion("Nueva orden", true, false);
-        tblOrdenes.addAccion("Abrir orden", false, true);
-        tblOrdenes.setAnchos(90, 100, 190, 190, 160, 170, 100);
+        String[] estados = new String[Orden.ESTADOS.length + 1];
+        estados[0] = "Todos";
+        System.arraycopy(Orden.ESTADOS, 0, estados, 1, Orden.ESTADOS.length);
+        cmbEstado = tblOrdenes.addFiltro("Estado", estados);
+
+        btnNuevaOrden = tblOrdenes.addAccion("Nueva orden", true, false);
+        btnAbrirOrden = tblOrdenes.addAccion("Abrir orden", false, true);
+
+        tblOrdenes.setAnchos(130, 130, 190, 220, 170, 170, 100);
         tblOrdenes.alinearDerecha(6);
 
-        getContenido().add(tblOrdenes, BorderLayout.CENTER);
+        JTabbedPane tabs = crearPestanas();
+        agregarPestana(tabs, "Órdenes", tblOrdenes);
+    }
+
+    public PnlTabla getTblOrdenes() {
+        return tblOrdenes;
+    }
+
+    public JComboBox<String> getCmbEstado() {
+        return cmbEstado;
+    }
+
+    public JButton getBtnNuevaOrden() {
+        return btnNuevaOrden;
+    }
+
+    public JButton getBtnAbrirOrden() {
+        return btnAbrirOrden;
     }
 }

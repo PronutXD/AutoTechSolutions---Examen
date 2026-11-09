@@ -42,7 +42,9 @@ public class PrincipalController {
         PnlClientes pnlClientes = new PnlClientes();
         vista.agregarSeccion(CLIENTES, "Clientes y vehículos", Icono.CLIENTES, pnlClientes);
         new ClientesController(pnlClientes, vista).iniciar();
-        vista.agregarSeccion(ORDENES, "Órdenes de trabajo", Icono.ORDENES, new PnlOrdenes());
+        PnlOrdenes pnlOrdenes = new PnlOrdenes();
+        vista.agregarSeccion(ORDENES, "Órdenes de trabajo", Icono.ORDENES, pnlOrdenes);
+        new OrdenController(pnlOrdenes, vista).iniciar();
         vista.agregarSeccion(INVENTARIO, "Inventario", Icono.INVENTARIO, new PnlInventario());
         vista.agregarSeccion(CATALOGOS, "Catálogos", Icono.CATALOGOS, new PnlCatalogos());
         vista.agregarSeccion(CONSULTAS, "Consultas", Icono.CONSULTAS, new PnlConsultas());

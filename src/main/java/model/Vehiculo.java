@@ -66,4 +66,8 @@ public class Vehiculo {
 
     /** Texto para mostrar en las tablas. */
     public String getEstadoTexto() { return activo ? "Activo" : "Inactivo"; }
+
+    /** Texto con el que aparece en las listas desplegables. */
+    @Override
+    public String toString() { return placa + " · " + marca + " " + modelo + " " + anio; }
 }
