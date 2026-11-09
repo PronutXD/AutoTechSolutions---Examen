@@ -45,7 +45,9 @@ public class PrincipalController {
         PnlOrdenes pnlOrdenes = new PnlOrdenes();
         vista.agregarSeccion(ORDENES, "Órdenes de trabajo", Icono.ORDENES, pnlOrdenes);
         new OrdenController(pnlOrdenes, vista).iniciar();
-        vista.agregarSeccion(INVENTARIO, "Inventario", Icono.INVENTARIO, new PnlInventario());
+        PnlInventario pnlInventario = new PnlInventario();
+        vista.agregarSeccion(INVENTARIO, "Inventario", Icono.INVENTARIO, pnlInventario);
+        new InventarioController(pnlInventario, vista).iniciar();
         vista.agregarSeccion(CATALOGOS, "Catálogos", Icono.CATALOGOS, new PnlCatalogos());
         vista.agregarSeccion(CONSULTAS, "Consultas", Icono.CONSULTAS, new PnlConsultas());
 
